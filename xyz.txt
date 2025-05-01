@@ -1,0 +1,748 @@
+IPPR
+
+
+Q1. Input: 24
+bit color Image  
+Expected Output:
+a)Display of Input Image and three  RGB split channel images
+b)Display of Input Image and three  CMY split channel images
+-Demonstrate images with appropriate captions. 
+
+import time
+import matplotlib.pyplot as plt
+from PIL import Image
+import numpy as np
+
+# Load the image
+img = Image.open("mor.jpeg")
+img = img.convert("RGB")
+
+# Convert the image to a NumPy array for easier manipulation
+img_array = np.array(img)
+
+# Split the RGB channels
+r, g, b = img_array[:,:,0], img_array[:,:,1], img_array[:,:,2]
+
+# Create images for the individual channels
+r_image = np.zeros_like(img_array)
+r_image[:,:,0] = r # Only keep the red channel
+
+g_image = np.zeros_like(img_array)
+g_image[:,:,1] = g # Only keep the green channel
+
+b_image = np.zeros_like(img_array)
+b_image[:,:,2] = b # Only keep the blue channel
+
+# Convert to CMY channels (1 - RGB)
+c_image = 255 - r_image
+m_image = 255 - g_image
+y_image = 255 - b_image
+
+# Save the individual channel images
+r_img = Image.fromarray(r_image)
+r_img.save("red_mor.jpg")
+
+g_img = Image.fromarray(g_image)
+g_img.save("green_mor.jpg")
+
+b_img = Image.fromarray(b_image)
+b_img.save("blue_mor.jpg")
+
+c_img = Image.fromarray(c_image)
+c_img.save("cyan_mor.jpg")
+
+m_img = Image.fromarray(m_image)
+m_img.save("magenta_mor.jpg")
+
+y_img = Image.fromarray(y_image)
+y_img.save("yellow_mor.jpg")
+
+# Plot the images
+fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+
+# Original image
+axes[0, 0].imshow(img)
+axes[0, 0].set_title("Original Image")
+axes[0, 0].axis('off')
+
+# RGB Channels
+axes[0, 1].imshow(r_image)
+axes[0, 1].set_title("Red mor")
+axes[0, 1].axis('off')
+
+axes[0, 2].imshow(g_image)
+axes[0, 2].set_title("Green mor")
+axes[0, 2].axis('off')
+
+axes[0, 3].imshow(b_image)
+axes[0, 3].set_title("Blue mor")
+axes[0, 3].axis('off')
+
+# CMY Channels
+axes[1, 0].imshow(c_image)
+axes[1, 0].set_title("Cyan mor")
+axes[1, 0].axis('off')
+
+axes[1, 1].imshow(m_image)
+axes[1, 1].set_title("Magenta mor")
+axes[1, 1].axis('off')
+
+axes[1, 2].imshow(y_image)
+axes[1, 2].set_title("Yellow mor")
+axes[1, 2].axis('off')
+
+# Hide the empty subplot
+axes[1, 3].axis('off')
+
+# Display the plot
+plt.tight_layout()
+
+# Save the entire figure as an image
+plt.savefig("output_image.jpg", format='jpg')
+
+# Add a time delay to keep the images visible for 200 seconds (you can adjust this time)
+plt.show()
+time.sleep(200) # 200 seconds of pause to keep the images visible
+
+
+Q2.a)Input: 24 bit color Image Expected Output: 24 bit negative Image
+b)Input: 24 bit color Image Expected Output: 8 bit (Gray) negative Image
+// Color image à Gray
+image à Negative of Gray  //
+
+from PIL import Image, ImageOps
+
+def color_negative(image_path, save_path):
+    image = Image.open(image_path).convert("RGB")  # Ensure 24-bit RGB
+    negative = ImageOps.invert(image)
+    negative.save(save_path)
+    print(f"24-bit negative saved to {save_path}")
+
+def grayscale_negative(image_path, save_path):
+    image = Image.open(image_path).convert("L")  # Convert to 8-bit grayscale
+    negative = ImageOps.invert(image)
+    negative.save(save_path)
+    print(f"8-bit grayscale negative saved to {save_path}")
+
+# Example usage:
+color_negative("input.jpeg", "output_color_negative.jpg")
+grayscale_negative("input.jpeg", "output_gray_negative.jpg")
+
+
+Q3. (Example) Solve following with help of python library.1)Given an image with a point P(x,y)=(2,3), apply a translation of 4 units to the right and 5 units upwards. What will be the new coordinates of the point after translation?  
+2) Given a point P(2,3), rotate it by 90 degrees counterclockwise around the origin. What are the new coordinates of the point after rotation?
+3) Given an image point P(3,4), apply a scaling factor of 2 along the x-axis and 3 along the y-axis. What will be the new coordinates of the point after scaling?
+4) Given a point P(2,3), apply a shear along the x-axis with a shear factor of 2. What are the new coordinates of the point after shearing?
+
+import numpy as np
+
+# Translation function
+def translate(point, tx, ty):
+    x, y = point
+    return x + tx, y + ty
+
+# Rotation function (90 degrees counterclockwise)
+def rotate_90_ccw(point):
+    x, y = point
+    rotation_matrix = np.array([[0, -1], [1, 0]])
+    new_x, new_y = np.dot(rotation_matrix, np.array([x, y]))
+    return int(new_x), int(new_y)
+
+# Scaling function
+def scale(point, sx, sy):
+    x, y = point
+    return x * sx, y * sy
+
+# Shearing function (along x-axis)
+def shear_x(point, shear_factor):
+    x, y = point
+    new_x = x + shear_factor * y
+    return new_x, y
+
+# Given points and transformations
+point1 = (2, 3)
+translated_point = translate(point1, 4, 5)
+print(f"Translated Point: {translated_point}")  # (6, 8)
+
+rotated_point = rotate_90_ccw(point1)
+print(f"Rotated Point: {rotated_point}")  # (-3, 2)
+
+point2 = (3, 4)
+scaled_point = scale(point2, 2, 3)
+print(f"Scaled Point: {scaled_point}")  # (6, 12)
+
+sheared_point = shear_x(point1, 2)
+print(f"Sheared Point: {sheared_point}")  # (8, 3)
+
+
+Q3. (Image) 5)Input data -Real time image
+Apply transformation translation, Rotation, Scaling and shearing on input image.
+
+import numpy as np
+import cv2
+
+# Load input image
+input_image = cv2.imread("mor.jpeg")  # Read the uploaded image
+if input_image is None:
+    raise ValueError("Error: Unable to load image. Check if 'mor.jpeg' exists in the correct directory.")
+
+rows, cols, _ = input_image.shape
+
+def apply_transformations(image):
+    # Translation
+    M_translate = np.float32([[1, 0, 50], [0, 1, 50]])
+    translated_img = cv2.warpAffine(image, M_translate, (cols, rows))
+
+    # Rotation
+    M_rotate = cv2.getRotationMatrix2D((cols / 2, rows / 2), 90, 1)
+    rotated_img = cv2.warpAffine(image, M_rotate, (cols, rows))
+
+    # Scaling
+    scaled_img = cv2.resize(image, None, fx=1.5, fy=1.5)
+
+    # Corrected Shearing (Shear along x-axis)
+    M_shear = np.float32([[1, 0.5, 0], [0, 1, 0]])
+    sheared_img = cv2.warpAffine(image, M_shear, (int(cols * 1.5), rows))
+
+    # Resize all images to match the same dimensions for easy visualization
+    translated_img = cv2.resize(translated_img, (cols, rows))
+    rotated_img = cv2.resize(rotated_img, (cols, rows))
+    sheared_img = cv2.resize(sheared_img, (cols, rows))
+    scaled_img = cv2.resize(scaled_img, (cols, rows))  # Not used in combined_image but kept for completeness
+
+    # Combine all images into one canvas
+    combined_image = np.zeros((rows * 2, cols * 2, 3), dtype=np.uint8)
+    combined_image[:rows, :cols] = image
+    combined_image[:rows, cols:] = translated_img
+    combined_image[rows:, :cols] = rotated_img
+    combined_image[rows:, cols:] = sheared_img  # Fixed shearing placement
+
+    # Add text labels
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.7
+    color = (255, 255, 255)  # White color for text
+    thickness = 2
+
+    def add_label(img, text, x, y):
+        cv2.putText(img, text, (x, y), font, font_scale, color, thickness, cv2.LINE_AA)
+
+    add_label(combined_image, "Original", 10, 30)
+    add_label(combined_image, "Translated", cols + 10, 30)
+    add_label(combined_image, "Rotated", 10, rows + 30)
+    add_label(combined_image, "Sheared", cols + 10, rows + 30)
+
+    return combined_image
+
+# Apply transformations
+combined_img = apply_transformations(input_image)
+
+# Save the output image
+cv2.imwrite("output.jpg", combined_img)
+
+# Display the image for 5 seconds and then exit
+cv2.imshow("Transformed Image", combined_img)
+cv2.waitKey(5000)  # Wait for 5 seconds (5000 milliseconds)
+cv2.destroyAllWindows()
+
+
+
+
+ANN
+
+
+
+
+1. Train a network with three different inputs and initial weight vector with Perceptron learning rule
+using python.
+
+
+import numpy as np
+
+# Step function (activation)
+def step_function(net_input):
+    return 1 if net_input >= 0 else 0
+
+# Perceptron training
+def train_perceptron(inputs, targets, learning_rate=0.1, epochs=10):
+    num_features = inputs.shape[1]
+    weights = np.zeros(num_features)
+    bias = 0
+
+    for epoch in range(epochs):
+        print(f"\nEpoch {epoch+1}")
+        for i in range(len(inputs)):
+            x = inputs[i]
+            d = targets[i]
+            net_input = np.dot(weights, x) + bias
+            y = step_function(net_input)
+
+            # Weight update rule
+            error = d - y
+            weights += learning_rate * error * x
+            bias += learning_rate * error
+
+            print(f"Input: {x}, Target: {d}, Output: {y}, Updated Weights: {weights}, Bias: {bias}")
+
+    return weights, bias
+
+# User inputs
+num_samples = int(input("Enter the number of training samples: "))
+num_features = int(input("Enter the number of features per input vector: "))
+
+inputs = []
+for i in range(num_samples):
+    sample = list(map(int, input(f"Enter input vector {i+1} (space-separated): ").split()))
+    inputs.append(sample)
+
+inputs = np.array(inputs)
+
+targets = []
+for i in range(num_samples):
+    target = int(input(f"Enter target for input vector {i+1} (0 or 1): "))
+    targets.append(target)
+
+targets = np.array(targets)
+
+learning_rate = float(input("Enter the learning rate: "))
+epochs = int(input("Enter the number of epochs: "))
+
+# Train the perceptron
+final_weights, final_bias = train_perceptron(inputs, targets, learning_rate, epochs)
+
+print("\nFinal weights:", final_weights)
+print("Final bias:", final_bias)
+
+# Enter the number of training samples: 3
+# Enter the number of features per input vector: 3
+# Enter input vector 1 (space-separated): 1 0 1
+# Enter input vector 2 (space-separated): 0 1 1
+# Enter input vector 3 (space-separated): 1 1 1
+# Enter target for input vector 1 (0 or 1): 1
+# Enter target for input vector 2 (0 or 1): 0
+# Enter target for input vector 3 (0 or 1): 1
+# Enter the learning rate: 0.2
+# Enter the number of epochs: 5
+
+
+
+2. Train a network with three different inputs and initial weight vector with Hebbian learning rule
+using python.
+
+import numpy as np
+
+# Get user input
+n = int(input("Enter the number of input vectors: "))
+dim = int(input("Enter the dimension of each input vector: "))
+learning_rate = float(input("Enter the learning rate (e.g., 0.1): "))
+
+# Input vectors
+input_vectors = []
+print(f"Enter {n} input vectors of dimension {dim} (space-separated):")
+for i in range(n):
+    x = list(map(float, input(f"Vector {i+1}: ").strip().split()))
+    if len(x) != dim:
+        raise ValueError(f"Vector must be of dimension {dim}")
+    input_vectors.append(x)
+
+# Initial weights
+initial_weights = list(map(float, input(f"Enter initial weight vector of dimension {dim}: ").strip().split()))
+if len(initial_weights) != dim:
+    raise ValueError(f"Weight vector must be of dimension {dim}")
+
+# Convert to NumPy arrays
+input_vectors = np.array(input_vectors)
+weights = np.array(initial_weights)
+
+# Hebbian Learning
+for i, x in enumerate(input_vectors):
+    y = np.dot(weights, x)
+    delta_w = learning_rate * x * y
+    weights += delta_w
+
+    print(f"\nAfter input {i+1}:")
+    print(f"Input vector: {x}")
+    print(f"Output (y): {y}")
+    print(f"Updated weights: {weights}")
+
+print("\nFinal learned weights:", weights)
+
+
+# Enter the number of input vectors: 3
+# Enter the dimension of each input vector: 3
+# Enter the learning rate (e.g., 0.1): 0.1
+# Enter 3 input vectors of dimension 3 (space-separated):
+# Vector 1: 1 0 -1
+# Vector 2: 0.5 -0.5 1
+# Vector 3: -1 1 0.5
+# Enter initial weight vector of dimension 3: 0 0 0
+
+
+
+3. Train a network with three different inputs and initial weight vector with Delta learning rule using
+python. Assume λ = 1 and c=0.1.
+
+import numpy as np
+
+# Parameters
+lambda_val = 1  # Learning rate
+c = 0.1         # Constant
+inputs = np.array([[0, 0, 1],  # Example inputs (3-dimensional)
+                   [1, 0, 1],
+                   [0, 1, 1],
+                   [1, 1, 1]])
+
+# Desired outputs (example)
+desired_outputs = np.array([0, 1, 1, 0])  # Target output
+
+# Initial weights (random or predefined)
+weights = np.random.rand(3)  # 3 input features
+
+# Training process (Delta Rule)
+epochs = 3  # Number of training iterations
+
+# Training loop
+for epoch in range(epochs):
+    for i in range(len(inputs)):
+        input_vector = inputs[i]
+        desired_output = desired_outputs[i]
+        
+        # Calculate actual output using the weights
+        actual_output = np.dot(input_vector, weights)
+        
+        # Apply the Delta learning rule for weight update
+        weights += lambda_val * c * (desired_output - actual_output) * input_vector
+        
+    # Print the updated weights after each epoch (optional)
+    print(f'Epoch {epoch+1}, Weights: {weights}')
+
+# Final weights
+print("Final weights after training:", weights)
+
+
+
+4.1 Realization of logical AND function using Perceptron learning rule.
+
+import numpy as np
+
+# Define the Perceptron class
+class Perceptron:
+    def __init__(self, input_size, learning_rate=0.1, epochs=10):
+        self.weights = np.zeros(input_size + 1)  # +1 for bias term
+        self.learning_rate = learning_rate
+        self.epochs = epochs
+
+    def activation(self, x):
+        return 1 if x >= 0 else 0
+
+    def predict(self, inputs):
+        summation = np.dot(inputs, self.weights[1:]) + self.weights[0]  # Bias is included in weights[0]
+        return self.activation(summation)
+
+    def train(self, training_inputs, labels):
+        for _ in range(self.epochs):
+            for inputs, label in zip(training_inputs, labels):
+                prediction = self.predict(inputs)
+                error = label - prediction
+                # Update weights and bias using Perceptron learning rule
+                self.weights[1:] += self.learning_rate * error * inputs
+                self.weights[0] += self.learning_rate * error
+
+# Define the training data for AND function
+training_data_and = [
+    (np.array([0, 0]), 0),
+    (np.array([0, 1]), 0),
+    (np.array([1, 0]), 0),
+    (np.array([1, 1]), 1),
+]
+
+# Training the Perceptron for AND function
+def train_perceptron_for_and():
+    perceptron = Perceptron(input_size=2)
+    inputs = [data[0] for data in training_data_and]
+    labels = [data[1] for data in training_data_and]
+    perceptron.train(inputs, labels)
+    
+    print("Trained weights for AND function:", perceptron.weights)
+    return perceptron
+
+and_perceptron = train_perceptron_for_and()
+
+# Test the Perceptron for AND function
+def test_perceptron_and(perceptron):
+    test_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    predictions = [perceptron.predict(data) for data in test_data]
+    return predictions
+
+print("\nTesting AND function predictions:")
+and_predictions = test_perceptron_and(and_perceptron)
+print(and_predictions)
+
+
+
+4.2 Realization of logical OR function using Perceptron learning rule.
+
+import numpy as np
+
+# Define the Perceptron class
+class Perceptron:
+    def __init__(self, input_size, learning_rate=0.1, epochs=10):
+        self.weights = np.zeros(input_size + 1)  # +1 for bias term
+        self.learning_rate = learning_rate
+        self.epochs = epochs
+
+    def activation(self, x):
+        return 1 if x >= 0 else 0
+
+    def predict(self, inputs):
+        summation = np.dot(inputs, self.weights[1:]) + self.weights[0]  # Bias is included in weights[0]
+        return self.activation(summation)
+
+    def train(self, training_inputs, labels):
+        for _ in range(self.epochs):
+            for inputs, label in zip(training_inputs, labels):
+                prediction = self.predict(inputs)
+                error = label - prediction
+                # Update weights and bias using Perceptron learning rule
+                self.weights[1:] += self.learning_rate * error * inputs
+                self.weights[0] += self.learning_rate * error
+
+# Define the training data for OR function
+training_data_or = [
+    (np.array([0, 0]), 0),
+    (np.array([0, 1]), 1),
+    (np.array([1, 0]), 1),
+    (np.array([1, 1]), 1),
+]
+
+# Training the Perceptron for OR function
+def train_perceptron_for_or():
+    perceptron = Perceptron(input_size=2)
+    inputs = [data[0] for data in training_data_or]
+    labels = [data[1] for data in training_data_or]
+    perceptron.train(inputs, labels)
+    
+    print("Trained weights for OR function:", perceptron.weights)
+    return perceptron
+
+or_perceptron = train_perceptron_for_or()
+
+# Test the Perceptron for OR function
+def test_perceptron_or(perceptron):
+    test_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    predictions = [perceptron.predict(data) for data in test_data]
+    return predictions
+
+print("\nTesting OR function predictions:")
+or_predictions = test_perceptron_or(or_perceptron)
+print(or_predictions)
+
+
+4.3 Realization of logical NAND function using Perceptron learning rule.
+
+import numpy as np
+
+# Define the Perceptron class
+class Perceptron:
+    def __init__(self, input_size, learning_rate=0.1, epochs=10):
+        self.weights = np.zeros(input_size + 1)  # +1 for bias term
+        self.learning_rate = learning_rate
+        self.epochs = epochs
+
+    def activation(self, x):
+        return 1 if x >= 0 else 0
+
+    def predict(self, inputs):
+        summation = np.dot(inputs, self.weights[1:]) + self.weights[0]  # Bias is included in weights[0]
+        return self.activation(summation)
+
+    def train(self, training_inputs, labels):
+        for _ in range(self.epochs):
+            for inputs, label in zip(training_inputs, labels):
+                prediction = self.predict(inputs)
+                error = label - prediction
+                # Update weights and bias using Perceptron learning rule
+                self.weights[1:] += self.learning_rate * error * inputs
+                self.weights[0] += self.learning_rate * error
+
+# Define the training data for NAND function
+training_data_nand = [
+    (np.array([0, 0]), 1),
+    (np.array([0, 1]), 1),
+    (np.array([1, 0]), 1),
+    (np.array([1, 1]), 0),
+]
+
+# Training the Perceptron for NAND function
+def train_perceptron_for_nand():
+    perceptron = Perceptron(input_size=2)
+    inputs = [data[0] for data in training_data_nand]
+    labels = [data[1] for data in training_data_nand]
+    perceptron.train(inputs, labels)
+    
+    print("Trained weights for NAND function:", perceptron.weights)
+    return perceptron
+
+nand_perceptron = train_perceptron_for_nand()
+
+# Test the Perceptron for NAND function
+def test_perceptron_nand(perceptron):
+    test_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    predictions = [perceptron.predict(data) for data in test_data]
+    return predictions
+
+print("\nTesting NAND function predictions:")
+nand_predictions = test_perceptron_nand(nand_perceptron)
+print(nand_predictions)
+
+
+
+5. Classify handwritten digits using Tensor flow.
+
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the MNIST dataset
+(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
+
+# Preprocess the data by normalizing the images
+train_images = train_images / 255.0
+test_images = test_images / 255.0
+
+# Build the neural network model
+model = models.Sequential([
+    layers.Flatten(input_shape=(28, 28)),   # Flatten the 28x28 images into 1D array
+    layers.Dense(128, activation='relu'),   # Fully connected layer with ReLU activation
+    layers.Dropout(0.2),                    # Dropout layer to prevent overfitting
+    layers.Dense(10, activation='softmax')  # Output layer with 10 classes (digits 0-9)
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the model
+model.fit(train_images, train_labels, epochs=5)
+
+# Evaluate the model on the test set
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"Test accuracy: {test_acc}")
+
+# Predict on a random test image
+predictions = model.predict(test_images)
+predicted_label = np.argmax(predictions[0])
+
+# Display the first test image and its predicted label
+plt.imshow(test_images[0], cmap=plt.cm.binary)
+plt.title(f"Predicted Label: {predicted_label}")
+plt.show()
+
+
+
+6. Design a model for speech recognition.
+
+# pip install SpeechRecognition
+# pip install pyaudio
+
+
+import speech_recognition as sr
+
+def recognize_speech():
+    # Initialize recognizer
+    recognizer = sr.Recognizer()
+
+    # Use the microphone for input
+    with sr.Microphone() as source:
+        print("Adjusting for ambient noise...")
+        recognizer.adjust_for_ambient_noise(source)  # Adjusts for ambient noise
+        print("Listening for your speech...")
+        audio = recognizer.listen(source)  # Listen to the speech
+
+    try:
+        # Use Google Web Speech API to recognize speech
+        print("Recognizing speech...")
+        text = recognizer.recognize_google(audio)  # Recognize the speech
+        print(f"You said: {text}")  # Output the recognized text
+
+    except sr.UnknownValueError:
+        print("Sorry, I could not understand the audio.")  # If speech is not clear
+    except sr.RequestError:
+        print("Sorry, the service is down or there is a problem with the API.")  # API issues
+
+if __name__ == "__main__":
+    recognize_speech()
+
+
+
+7. Stock Market Price prediction using feed forward algorithm.
+
+
+
+# pip install yfinance pandas numpy scikit-learn matplotlib tensorflow
+
+import yfinance as yf
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import matplotlib.pyplot as plt
+
+# 📌 Step 1: User Input
+stock_symbol = input("Enter stock symbol (e.g., AAPL, MSFT): ")
+start_date = input("Enter start date (YYYY-MM-DD): ")
+end_date = input("Enter end date (YYYY-MM-DD): ")
+
+# 📌 Step 2: Fetch Data
+data = yf.download(stock_symbol, start=start_date, end=end_date)
+if data.empty:
+    print("No data found. Check your symbol and date range.")
+    exit()
+
+# 📌 Step 3: Use only 'Close' price
+data = data[['Close']]
+
+# 📌 Step 4: Preprocessing
+scaler = MinMaxScaler()
+scaled_data = scaler.fit_transform(data)
+
+# Create features and labels
+def create_dataset(dataset, time_step=10):
+    X, y = [], []
+    for i in range(len(dataset)-time_step):
+        X.append(dataset[i:(i+time_step), 0])
+        y.append(dataset[i + time_step, 0])
+    return np.array(X), np.array(y)
+
+X, y = create_dataset(scaled_data)
+
+# Reshape for FFNN (not 3D like LSTM)
+X_train = X
+y_train = y
+
+# 📌 Step 5: Build Feed Forward Neural Network
+model = Sequential()
+model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# 📌 Step 6: Train Model
+model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
+
+# 📌 Step 7: Predict and Plot
+predicted = model.predict(X_train)
+predicted_prices = scaler.inverse_transform(predicted)
+real_prices = scaler.inverse_transform(y_train.reshape(-1, 1))
+
+# Plot
+plt.figure(figsize=(10, 5))
+plt.plot(real_prices, label='Actual Price')
+plt.plot(predicted_prices, label='Predicted Price')
+plt.title(f'{stock_symbol} Stock Price Prediction')
+plt.xlabel('Days')
+plt.ylabel('Price')
+plt.legend()
+plt.show()
